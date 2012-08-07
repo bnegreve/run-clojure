@@ -1,0 +1,19 @@
+# run-clojure
+
+Run aims at providing a framework to easily reproduce time experiments algorithms. 
+
+Run is a parametrizable script that can be used to program, run and
+measure various metric such as execution time and memory usage on a
+large number of executions of a given program.  Run stores program
+output / execution time / memory usage / exact date / machine name / binary files.
+
+
+## Usage
+
+FIXME: write
+
+## License
+
+Copyright (C) 2012 FIXME
+
+Distributed under the Eclipse Public License, the same as Clojure.
