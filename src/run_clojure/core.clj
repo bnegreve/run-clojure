@@ -1,7 +1,9 @@
 (ns run-clojure.core
-  (:use [clojure.tools.cli]
-        [clojure.string]))
+  (:use [clojure.tools.cli])
+  (:require [clojure.string :as string]))
 
+(def parameters "Contains the list of user defined parameters (-p)
+bound with their value space." (array-map))
 
 (defn parameter-description-usage-string []
   "Return parameter description usage string."
@@ -40,7 +42,7 @@ regular expression: "
 (defn parse-parameter-value-space [string]
  "Given a string representing a list of values separated by commas
 this function returns an array containing each value."
-  (split string #","))
+ (string/split string #","))
 
 (defn parse-parameter-name [string]
   "Parse parameter name (noop)."
@@ -48,7 +50,7 @@ this function returns an array containing each value."
 
 (defn parse-parameter-description [string]
   "Parse a parameter description string."
-  (let [description (split string #":" 2)]
+  (let [description (string/split string #":" 2)]
     (if (not (= (count  description) 2))
       (throw (Exception. (str "Parameter description format is incorrect,"
                               " format must be "
@@ -58,37 +60,19 @@ this function returns an array containing each value."
         (list (parse-parameter-name (first description))
               (parse-parameter-value-space (last description)))
         (assert nil "Unhanded systax error in parameter description.")))))
-    
-
-;; (parse-parameter-description "poulet:1,2,3")
-;; (parse-parameter-description "Poul2et:qsd")
-;; (parse-parameter-description "Poul2et:1qsd,2qj,3lkqsj")
-;; (parse-parameter-description "Poul2et:1q:qds,qd!")
-
-;; (parse-parameter-description "Poul2et:")
-;; (parse-parameter-description ":qdkj")
-;; (parse-parameter-description ":qdkj")
-;; (parse-parameter-description "qsdkj:qdkj,qds,q,")
-;; (parse-parameter-description "qsdkj:,qdkj,qds,q")
-
-
-
-
-
-
-
-
 
 (defn parse-arguments [args]
   "Parse main program arguments."
-  (cli args ["-p" "--parameter" "Provide a new parameter with its value space." 
-             :parse-fn #(parse-parameter-description %)]))
+  (cli args ["-p" "--parameter"
+             "Provide a new parameter with its value space." 
+             :parse-fn #(let [parsed-parameter (parse-parameter-description %)]
+                          (assert (= (count parsed-parameter) 2))
+                          (def parameters (assoc parameters 
+                                            (first parsed-parameter) 
+                                            (last parsed-parameter) )))]))
 
 (defn -main [& args]
-  (println (parse-arguments args)))
-
-
-;; (println (cli args ["-p" "--port" "Port to listen on" :default 3000 :parse-fn #(Integer/parseInt %)]))
-
+  (parse-arguments ["-p" "a:1"])
+  (println parameters))
 
 
