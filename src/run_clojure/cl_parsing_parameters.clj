@@ -54,7 +54,7 @@ this function returns an array containing each value."
                               (parameter-description-usage-string) ".")))
       (if (and (parameter-name-is-correct (first description))
                (parameter-value-space-is-correct (last description)))
-        (list (parse-parameter-name (first description))
+        (list (keyword (parse-parameter-name (first description)))
               (parse-parameter-value-space (last description)))
         (assert nil "Unhanded systax error in parameter description.")))))
 
