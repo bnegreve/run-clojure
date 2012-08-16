@@ -1,9 +1,15 @@
 (ns run-clojure.cl_parsing
   (:use [clojure.tools.cli])
-  (:require [clojure.string :as string]))
+  (:require [clojure.string :as string])
+  (:require [com.lithinos.amotoen.core :as amotoen]))
 
 (load "cl_parsing_parameters")
 (load "cl_parsing_using_expression")
+
+(defn check-using-expression-ast [using-expression-ast parameters]
+(println using-expression-ast)
+
+true)
 
 (defn parse-arguments [args]
   "Parse main program arguments."
@@ -23,5 +29,3 @@ space to be exlored."
         :parse-fn #(parse-using-expression %)]
        
        ))
-
-
