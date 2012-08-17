@@ -6,14 +6,6 @@
   successful parsing, [] otherwise"
   [])
 
-;; (def #^{:private true} grammar 
-;;   "Grammar used to parse using expressions"
-;;   {:Expression [:Term '(* [:Operator :Term] ) :$]
-;;    :Operator [ \x ]
-;;    :Term [ \a ]
-;;    })
-
-
 (def #^{:private true} grammar 
   "Grammar used to parse using expressions"
   {
@@ -36,7 +28,7 @@
 (defn term-fn [x] 
   (if (= 3 (count x))
     (ast-remove-tag (second x))
-    (ast-remove-tag x)))
+    (list "ident" (ast-remove-tag x))))
 
 (defn ident-fn [x]
   (reduce (fn [s t] (str s (second (first t))))

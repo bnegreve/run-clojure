@@ -6,7 +6,7 @@
 (load "cl_parsing_parameters")
 (load "cl_parsing_using_expression")
 
-(defn check-using-expression-ast [using-expression-ast parameters]
+(defn check-using-expression-context [using-expression-ast parameters]
 (println using-expression-ast)
 
 true)

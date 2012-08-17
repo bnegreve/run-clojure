@@ -16,6 +16,6 @@ replaced in a command line template to form one command line."
 
 (defn -main [& args]
   (cl_parsing/parse-arguments args)
-  (cl_parsing/check-using-expression-ast cl_parsing/using-expression-ast cl_parsing/parameters)
+  (cl_parsing/check-using-expression-context cl_parsing/using-expression-ast cl_parsing/parameters)
   (build-parameter-tuples cl_parsing/parameters true))
 

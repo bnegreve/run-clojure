@@ -35,21 +35,21 @@
 
 (testing "using expression parsing"
   (deftest should-handle-simple-using-expression
-    (is (= "A"
+    (is (= '("ident" "A")
            (parse-using-expression "A")))
-    (is (= "A"
+    (is (= '("ident" "A")
            (parse-using-expression "(A)")))
-    (is (= '("eq" "A" "A")
+    (is (= '("eq" ("ident" "A") ("ident" "A"))
            (parse-using-expression "A=A")))
-    (is (= '("product" "A" "A")
+    (is (= '("product" ("ident" "A") ("ident" "A"))
            (parse-using-expression "AxA")))))
 
 (testing "using expression parsing"
   (deftest should-deal-with-priority
-    (is (= '("product" "A" ("eq" "B" "C")
+    (is (= '("product" ("ident" "A") ("eq" ("ident" "B") ("ident" "C"))
            (parse-using-expression "AxB=C"))))
-    (is (= '("eq" "A" ("product" "B" "C"))
+    (is (= '("eq" ("ident" "A") ("product" ("ident" "B") ("ident" "C")))
            (parse-using-expression "A=BxC")))
-    (is (= '("product" ("eq" "A" "B") "C")
+    (is (= '("product" ("eq" ("ident" "A") ("ident" "B")) ("ident" "C"))
            (parse-using-expression "(A=B)xC")))
 ))
