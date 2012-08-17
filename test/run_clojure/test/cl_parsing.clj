@@ -28,9 +28,28 @@
                  (parse-parameter-description "poulet:,a,,b,c")))
     (is (thrown? Exception
                  (parse-parameter-description "poulet:,a,,b,c"))))
-
-
   (deftest should-work-when-called-from-general-argument-parsing-function
     (parse-arguments ["-p" "a:1,2"])
     (is (= parameters)
         (array-map "a" [1 2]))))
+
+(testing "using expression parsing"
+  (deftest should-handle-simple-using-expression
+    (is (= "A"
+           (parse-using-expression "A")))
+    (is (= "A"
+           (parse-using-expression "(A)")))
+    (is (= '("eq" "A" "A")
+           (parse-using-expression "A=A")))
+    (is (= '("product" "A" "A")
+           (parse-using-expression "AxA")))))
+
+(testing "using expression parsing"
+  (deftest should-deal-with-priority
+    (is (= '("product" "A" ("eq" "B" "C")
+           (parse-using-expression "AxB=C"))))
+    (is (= '("eq" "A" ("product" "B" "C"))
+           (parse-using-expression "A=BxC")))
+    (is (= '("product" ("eq" "A" "B") "C")
+           (parse-using-expression "(A=B)xC")))
+))
