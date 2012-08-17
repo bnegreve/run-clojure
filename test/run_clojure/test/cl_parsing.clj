@@ -4,13 +4,13 @@
 
 (testing "parameter parsing"
   (deftest should-handle-simple-parameter-description
-    (is (= (list "Chicken" (vector "1"))
+    (is (= (list :Chicken (vector "1"))
            (parse-parameter-description "Chicken:1")))
-    (is (= (list "chicken" (vector "1" "2" "3"))
+    (is (= (list :chicken (vector "1" "2" "3"))
            (parse-parameter-description "chicken:1,2,3")))
-    (is (= (list "chicken_size" (vector "1" "2" "3"))
+    (is (= (list :chicken_size (vector "1" "2" "3"))
            (parse-parameter-description "chicken_size:1,2,3")))
-    (is (= (list "chicken_size" (vector "a:" "b/Q" "c9@"))
+    (is (= (list :chicken_size (vector "a:" "b/Q" "c9@"))
            (parse-parameter-description "chicken_size:a:,b/Q,c9@"))))
 
   (deftest should-handle-syntax-errors-in-parameter-description
