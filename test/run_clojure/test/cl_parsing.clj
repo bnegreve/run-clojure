@@ -14,19 +14,19 @@
            (parse-parameter-description "chicken_size:a:,b/Q,c9@"))))
 
   (deftest should-handle-syntax-errors-in-parameter-description
-    (is (thrown? Exception
+    (is (thrown? Error
                  (parse-parameter-description "chicken")))
-    (is (thrown? Exception
+    (is (thrown? Error
                  (parse-parameter-description "")))
-    (is (thrown? Exception
+    (is (thrown? Error
                  (parse-parameter-description ":")))
-    (is (thrown? Exception
+    (is (thrown? Error
                  (parse-parameter-description "poulet:a,b,c,")))
-    (is (thrown? Exception
+    (is (thrown? Error
                  (parse-parameter-description "poulet:,a,b,c")))
-    (is (thrown? Exception
+    (is (thrown? Error
                  (parse-parameter-description "poulet:,a,,b,c")))
-    (is (thrown? Exception
+    (is (thrown? Error
                  (parse-parameter-description "poulet:,a,,b,c"))))
   (deftest should-work-when-called-from-general-argument-parsing-function
     (parse-arguments ["-p" "a:1,2"])

@@ -19,7 +19,7 @@ this function."
   "Returns true if parameter's name matches parameter's format, throws
 an exception otherwise."
   (if (not (re-seq (parameter-name-re) string))
-    (throw (Exception. 
+    (throw (Error. 
             (str "Parameter name format is incorrect."
                  "(Parameter name must match the following regular expression: "
                  (str (parameter-name-re)))))
@@ -29,7 +29,7 @@ an exception otherwise."
   "Returns true if parameter's name matches value space format, throws
 an exception otherwise."
   (if (not (re-seq (parameter-value-space-re) string))
-    (throw (Exception. 
+    (throw (Error. 
             (str "Parameter value space format is incorrect."
                  "(Parameter value space must match the following
 regular expression: "
@@ -49,7 +49,7 @@ this function returns an array containing each value."
   "Parse a parameter description string."
   (let [description (string/split string #":" 2)]
     (if (not (= (count  description) 2))
-      (throw (Exception. (str "Parameter description format is incorrect,"
+      (throw (Error. (str "Parameter description format is incorrect,"
                               " format must be "
                               (parameter-description-usage-string) ".")))
       (if (and (parameter-name-is-correct (first description))
