@@ -35,21 +35,42 @@
 
 (testing "using expression parsing"
   (deftest should-handle-simple-using-expression
-    (is (= '("ident" "A")
+    (is (= '(ast-ident "A")
            (parse-using-expression "A")))
-    (is (= '("ident" "A")
+    (is (= '(ast-ident "A")
            (parse-using-expression "(A)")))
-    (is (= '("eq" ("ident" "A") ("ident" "A"))
+    (is (= '(ast-eq (ast-ident "A") (ast-ident "A"))
            (parse-using-expression "A=A")))
-    (is (= '("product" ("ident" "A") ("ident" "A"))
+    (is (= '(ast-product (ast-ident "A") (ast-ident "A"))
            (parse-using-expression "AxA")))))
 
 (testing "using expression parsing"
   (deftest should-deal-with-priority
-    (is (= '("product" ("ident" "A") ("eq" ("ident" "B") ("ident" "C"))
+    (is (= '(ast-product (ast-ident "A") (ast-eq (ast-ident "B") (ast-ident "C"))
            (parse-using-expression "AxB=C"))))
-    (is (= '("eq" ("ident" "A") ("product" ("ident" "B") ("ident" "C")))
+    (is (= '(ast-eq (ast-ident "A") (ast-product (ast-ident "B") (ast-ident "C")))
            (parse-using-expression "A=BxC")))
-    (is (= '("product" ("eq" ("ident" "A") ("ident" "B")) ("ident" "C"))
+    (is (= '(ast-product (ast-eq (ast-ident "A") (ast-ident "B")) (ast-ident "C"))
            (parse-using-expression "(A=B)xC")))
 ))
+
+(testing "ast-check"
+  (deftest should-detect-undeclared-parameters
+    (is (thrown? Error
+                 (ast-check 
+                  '(ast-eq (ast-ident A) (ast-ident C))
+                  {:A [1 2 4]}
+                  ))))
+
+  (deftest should-handle-single-ident
+    (is (= '((1 {:name A}) (2 {:name A}) (4 {:name A}))
+            (ast-check 
+            '(ast-ident A) ; ast 
+            {:A [1 2 4]})))) ; parameter 
+  (deftest should-handle-eq
+    (is (= '((1 {:name A} 10 {:name B}) (2 {:name A} 20 {:name B}) (4 {:name A} 30 {:name B}))
+           (ast-check 
+            '(ast-eq (ast-ident A) (ast-ident B)) ; ast
+            {:B [10 20 30], :A [1 2 4]})))) ; parameters 
+
+)

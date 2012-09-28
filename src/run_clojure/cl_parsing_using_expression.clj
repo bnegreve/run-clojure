@@ -25,10 +25,11 @@
 (defn ast-remove-tag [x]
   (second (first x)))
 
+
 (defn term-fn [x] 
   (if (= 3 (count x))
     (ast-remove-tag (second x))
-    (list "ident" (ast-remove-tag x))))
+    (list 'ast-ident (ast-remove-tag x))))
 
 (defn ident-fn [x]
   (reduce (fn [s t] (str s (second (first t))))
@@ -36,9 +37,10 @@
                     (rest (flatten x))))
 
 
+
 (defn prod-expr-fn [x] 
   (if (= 3 (count x))
-    (list "product" 
+    (list 'ast-product 
           (ast-remove-tag (first x))
           (ast-remove-tag (nth x 2)))
     (ast-remove-tag x)))
@@ -47,7 +49,7 @@
 
 (defn eq-expr-fn [x]
   (if (= 3 (count x))
-    (list "eq" (ast-remove-tag  (first x))
+    (list 'ast-eq (ast-remove-tag  (first x))
           (ast-remove-tag (nth x 2)))
     (ast-remove-tag x)))
 
