@@ -3,7 +3,7 @@
   (:use [run-clojure.utils])
   (:require [clojure.string :as string])
   (:require [run-clojure.cl_parsing :as cl_parsing])
-  (:require [run-clojure.utils :as utils]))
+  (:require [run-clojure.ast_process :as ast_process]))
 
 (defn build-parameter-tuples [parameters using-expression-ast]
 "Builds a vector of parameter tuples from a using expression.
@@ -15,6 +15,6 @@ replaced in a command line template to form one command line."
 
 (defn -main [& args]
   (cl_parsing/parse-arguments args)
-  (cl_parsing/ast-check-and-process
+  (ast_process/ast-check-and-process
    cl_parsing/using-expression-ast cl_parsing/parameters))
 
