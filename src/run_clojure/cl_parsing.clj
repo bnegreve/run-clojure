@@ -21,11 +21,20 @@ parameter value space."
        node-value))))
 
 (defn ast-check-eq [ast-eq-node parameter]
-  "Combines to value space with the eq operator. The eq operator binds the nth element of the first term with the nth element of the second term.
- Combining two one parameter value space will thus create one two
-parameters value space.  For example, (eq (1 2 3) (a b c)) will create
-the value space (1 a) (2 b) (3 c) Each term value space must contain
-the same number of elements. "
+  "Combines two value space with the eq operator.
+ The eq operator binds the nth element of the first value space with
+ the nth element of the second value space. 
+
+For example, (= ((1) (2) (3)) ((a) (b) (c))) will create the value
+space ((1 a) (2 b) (3 c)).
+
+The eq operator can only be applied to value space containing the same
+ number of tuples. Combining two value spaces with n tuples each will thus
+ create a new value space also with n tuples.
+
+Let d1 and d2 be the two combined value spaces.  If the tuples in d1
+contain p1 parameter values and the tuples in d2 contain p2 parameter
+values, then the tuples in d1=d2 will contain p1+p2 parameter values."
   (assert (= 'ast-eq (first ast-eq-node)))
   (let [term1 (ast-check-node (nth ast-eq-node 1) parameter)
         term2 (ast-check-node (nth ast-eq-node 2) parameter)]
@@ -33,6 +42,24 @@ the same number of elements. "
       (throw (Error. "'=' operation between parameters with
 value space of different size."))
       (map-indexed (fn [i e] (concat e (nth term2 i))) term1))))
+
+(defn ast-check-product [ast-product-node parameter]
+  (assert (= 'ast-product (first ast-product-node)))
+"Combines two value spaces with the product operator. The product
+operator create a new value space with a tuple for each possible
+combination of a tuple in the first value space with a tuple in the
+second value space. (Cartesian product.)
+
+For example, (x ((1) (2)) ((a) (b))) will create the value
+space ((1 a) (1 b) (2 a) (2 b)).
+
+Let d1 and d2 be the two combined value spaces. If d1 has n1 tuples
+and d2 has n2 tuples the resulting value space will have n1*n2 tuples.
+
+If the tuples in d1 contain p1 parameter values and the tuples in d2
+contain p2 parameter values, then the tuples in d1xd2 will contain
+p1+p2 parameter values."
+)
 
 (defn ast-check-node [ast parameter] 
   "Checks the node of the abstract syntax tree and decorates the tree
