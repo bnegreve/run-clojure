@@ -1,5 +1,6 @@
 (ns run-clojure.cl_parsing
   (:use [clojure.tools.cli])
+  (:use [run-clojure.utils])
   (:require [clojure.string :as string])
   (:require [com.lithinos.amotoen.core :as amotoen]))
 
@@ -44,7 +45,6 @@ value space of different size."))
       (map-indexed (fn [i e] (concat e (nth term2 i))) term1))))
 
 (defn ast-check-product [ast-product-node parameter]
-  (assert (= 'ast-product (first ast-product-node)))
 "Combines two value spaces with the product operator. The product
 operator create a new value space with a tuple for each possible
 combination of a tuple in the first value space with a tuple in the
@@ -59,6 +59,9 @@ and d2 has n2 tuples the resulting value space will have n1*n2 tuples.
 If the tuples in d1 contain p1 parameter values and the tuples in d2
 contain p2 parameter values, then the tuples in d1xd2 will contain
 p1+p2 parameter values."
+
+  (assert (= 'ast-product (first ast-product-node)))
+
 )
 
 (defn ast-check-node [ast parameter] 
@@ -72,21 +75,14 @@ with tuples of values for parameters."
       (ast-check-eq ast parameter)
       (assert false))))) ; node label is unkown
 
-
-(defn ast-check [ast parameter] 
+(defn ast-check-and-process [ast parameter] 
   "Check the abstract syntax tree built from using expression and
   builds the tuples where each tuple represents a possible set of value for the parameters"
-  (ast-check-node ast parameter))
+  (debug-print-return (ast-check-node ast parameter)))
 
-
-(defn check-using-expression-context [using-expression-ast parameters]
-(println using-expression-ast)
-(ast-check using-expression-ast parameters)
-true)
-
-    
 (defn parse-arguments [args]
-  "Parse main program arguments."
+  "Parse main program arguments. Builds the parameter list and the
+using expression abstract syntax tree (ast)."
   (cli args
        ;; parameters 
        ["-p" "--parameter"
@@ -95,11 +91,12 @@ true)
                           (assert (= (count parsed-parameter) 2))
                           (def parameters (assoc parameters 
                                             (first parsed-parameter) 
-                                            (last parsed-parameter) )))]
+                                            (last parsed-parameter) ))
+                          (debug-print-return parameters))]
        ;; using expression 
        ["-u" "--using"
         "Provide a using expression to describe the parameter value
 space to be exlored."
-        :parse-fn #(parse-using-expression %)]
+        :parse-fn #(debug-print-return (parse-using-expression %))]
        
        ))
