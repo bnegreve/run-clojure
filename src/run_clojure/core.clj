@@ -5,13 +5,6 @@
   (:require [run-clojure.cl_parsing :as cl_parsing])
   (:require [run-clojure.ast_process :as ast_process]))
 
-(defn build-parameter-tuples [parameters using-expression-ast]
-"Builds a vector of parameter tuples from a using expression.
-A parameter tuple is a tuples of parameter values that must be
-replaced in a command line template to form one command line."
-(println parameters) 
-(println using-expression-ast)
-)
 
 (defn -main [& args]
   (cl_parsing/parse-arguments args)

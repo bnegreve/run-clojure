@@ -53,11 +53,15 @@ and d2 has n2 tuples the resulting value space will have n1*n2 tuples.
 If the tuples in d1 contain p1 parameter values and the tuples in d2
 contain p2 parameter values, then the tuples in d1xd2 will contain
 p1+p2 parameter values."
-
-  (assert (= 'ast-product (first ast-product-node)))
-
-)
-
+(assert (= 'ast-product (first ast-product-node)))
+(let [term1 (ast-check-node (nth ast-product-node 1) parameter)
+      term2 (ast-check-node (nth ast-product-node 2) parameter)]
+  (map (fn [e1]
+         (reduce 
+          concat 
+          (map (fn [e2] (concat e1 e2)) term2)))
+       term1)))
+               
 (defn ast-check-node [ast parameter] 
   "Checks the node of the abstract syntax tree and decorates the tree
 with tuples of values for parameters."
@@ -67,7 +71,9 @@ with tuples of values for parameters."
     (ast-check-ident ast parameter)
     (if (= node-label 'ast-eq)
       (ast-check-eq ast parameter)
-      (assert false))))) ; node label is unkown
+      (if (= node-label 'ast-product)
+        (ast-check-product ast parameter)
+        (assert false)))))) ; node label is unkown
 
 (defn ast-check-and-process [ast parameter] 
   "Check the abstract syntax tree built from using expression and

@@ -16,9 +16,8 @@ using expression abstract syntax tree (ast)."
              "Provide a new parameter with its value space." 
              :parse-fn #(let [parsed-parameter (parse-parameter-description %)]
                           (assert (= (count parsed-parameter) 2))
-                          (def parameters (assoc parameters 
-                                            (first parsed-parameter) 
-                                            (last parsed-parameter) ))
+                          (def parameters 
+                            (add-parsed-parameter parameters parsed-parameter))
                           (debug-print-return parameters))]
        ;; using expression 
        ["-u" "--using"

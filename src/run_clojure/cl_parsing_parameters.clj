@@ -2,6 +2,7 @@
 (def parameters "Contains the list of user defined parameters (-p)
 bound with their value space." (array-map))
 
+
 (defn parameter-description-usage-string []
   "Return parameter description usage string."
   "<parameter name>:<parameter value 1>,...,<parameter value n>")
@@ -58,3 +59,7 @@ this function returns an array containing each value."
               (parse-parameter-value-space (last description)))
         (assert nil "Unhanded systax error in parameter description.")))))
 
+(defn add-parsed-parameter [parameters new-parsed-parameter]
+  (assoc parameters 
+    (first new-parsed-parameter) 
+    (last new-parsed-parameter)))
