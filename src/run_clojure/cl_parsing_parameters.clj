@@ -65,5 +65,9 @@ this function returns an array containing each value."
     (last new-parsed-parameter)))
 
 (defn all-parameter-names [parameters]
-  "Returns the list of every parameter name."
+  "Returns the list of parameter names.
+If parameters is a tuple, then returns all the parameter names
+occurring in the tuple."
   (map name (keys parameters)))
+
+
