@@ -12,55 +12,84 @@ parameter value space."
     (if (nil? node-value)
       (throw (Error. (str "Parameter '" (second ast-ident-node) "' undeclared.\n")))
       (map 
-       (fn [x] (list  x (array-map :name (second ast-ident-node)) )) 
+       (fn [x] (array-map 
+                (keyword (second ast-ident-node))
+                x)) 
        node-value))))
 
 (defn ast-check-eq [ast-eq-node parameter]
-  "Combines two value space with the eq operator.
- The eq operator binds the nth element of the first value space with
- the nth element of the second value space. 
+  "Combines two value spaces with the eq ('=') operator.
+Value spaces are made of tuples. Each tuple is actually a map which
+ binds (one or more) parameter names with values.
 
-For example, (= ((1) (2) (3)) ((a) (b) (c))) will create the value
-space ((1 a) (2 b) (3 c)).
+When two value spaces are combined with the eq operator ('=') the
+tuples from the first input value space are merged with the tuples of
+the second input value space. (The operation is rejected if two two
+input value spaces have different number of tuples.)
 
-The eq operator can only be applied to value space containing the same
- number of tuples. Combining two value spaces with n tuples each will thus
- create a new value space also with n tuples.
+Hence: 
+- There are as many tuple in the new value space as in any
+input value space.
 
-Let d1 and d2 be the two combined value spaces.  If the tuples in d1
-contain p1 parameter values and the tuples in d2 contain p2 parameter
-values, then the tuples in d1=d2 will contain p1+p2 parameter values."
+- The size of the tuples in the new value space is the sum of the size
+  of the tuples in the input value spaces. (Unless there are duplicate
+  parameter names (e.g. A=A))
+
+For example:
+input value space 1 (two tuples for 2 values of parameter A):
+ ({:A 1} {:A 2})  
+
+input value space 2 (two tuples for 2 values of parameter B):
+ ({:B 10} {:B 20}) 
+
+new value space (two tuples for 2 values of parameter A and B)
+ ({:A 1, :B 10}
+  {:A 2,  :B 20})"
   (assert (= 'ast-eq (first ast-eq-node)))
   (let [term1 (ast-check-node (nth ast-eq-node 1) parameter)
         term2 (ast-check-node (nth ast-eq-node 2) parameter)]
     (if (not (= (count term1) (count term2)))
       (throw (Error. "'=' operation between parameters with
 value space of different size."))
-      (map-indexed (fn [i e] (concat e (nth term2 i))) term1))))
+      (map-indexed (fn [i e] (merge e (nth term2 i))) term1))))
 
 (defn ast-check-product [ast-product-node parameter]
-"Combines two value spaces with the product operator. The product
-operator create a new value space with a tuple for each possible
-combination of a tuple in the first value space with a tuple in the
-second value space. (Cartesian product.)
 
-For example, (x ((1) (2)) ((a) (b))) will create the value
-space ((1 a) (1 b) (2 a) (2 b)).
+  "Combines two value spaces with the product ('x') operator.
+Value spaces are made of tuples. Each tuple is actually a map which
+ binds (one or more) parameter names with values.
 
-Let d1 and d2 be the two combined value spaces. If d1 has n1 tuples
-and d2 has n2 tuples the resulting value space will have n1*n2 tuples.
+When two value spaces are combined with the product operator ('x') the
+tuples from the first input value space are combined with the tuples of
+the second input value space. 
 
-If the tuples in d1 contain p1 parameter values and the tuples in d2
-contain p2 parameter values, then the tuples in d1xd2 will contain
-p1+p2 parameter values."
+Hence: 
+- The number of tuples in the new value space is the number of tuples in the first input value space times the number of tuples in the second input value space.
+
+- The size of the tuples in the new value space is the sum of the size
+  of the tuples in the input value spaces. (Unless there are duplicate
+  parameter names (e.g. A=A))
+
+For example:
+input value space 1 (two tuples for 2 values of parameter A):
+ ({:A 1} {:A 2})  
+
+input value space 2 (two tuples for 2 values of parameter B):
+ ({:B 10} {:B 20}) 
+
+new value space (two tuples for 2 values of parameter A and B)
+ ({:A 1, :B 10}
+  {:A 1, :B 20}
+  {:A 2, :B 10}
+  {:A 2, :B 20})"
 (assert (= 'ast-product (first ast-product-node)))
 (let [term1 (ast-check-node (nth ast-product-node 1) parameter)
       term2 (ast-check-node (nth ast-product-node 2) parameter)]
-  (map (fn [e1]
-         (reduce 
-          concat 
-          (map (fn [e2] (concat e1 e2)) term2)))
-       term1)))
+  (reduce (fn [c x] (concat x c)) '() 
+          (map (fn [t1] 
+                 (map (fn [t2] 
+                        (merge t1 t2)) term2))
+               term1))))
                
 (defn ast-check-node [ast parameter] 
   "Checks the node of the abstract syntax tree and decorates the tree

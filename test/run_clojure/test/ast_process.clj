@@ -12,12 +12,12 @@
                   ))))
 
   (deftest should-handle-single-ident
-    (is (= '((1 {:name A}) (2 {:name A}) (4 {:name A}))
+    (is (= '({:A 1} {:A 2} {:A 4})
             (ast-check-and-process 
             '(ast-ident A) ; ast 
             {:A [1 2 4]})))) ; parameter 
   (deftest should-handle-eq
-    (is (= '((1 {:name A} 10 {:name B}) (2 {:name A} 20 {:name B}) (4 {:name A} 30 {:name B}))
+    (is (= '({:A 1, :B 10} {:A 2, :B 20} {:A 4, :B 30})
            (ast-check-and-process 
             '(ast-eq (ast-ident A) (ast-ident B)) ; ast
             {:B [10 20 30], :A [1 2 4]})))) ; parameters 
@@ -27,18 +27,18 @@
           (add-parsed-parameter 
            (add-parsed-parameter (array-map) (parse-parameter-description "A:1,2"))
            (parse-parameter-description "B:a"))]
-      (is (= '(("1" {:name "A"} "a" {:name "B"}) ("2" {:name "A"} "a" {:name "B"}))
-           (ast-check-and-process 
-;            '(ast-product (ast-ident A) (ast-ident B)) ; ast
-            (parse-using-expression "AxB")
-            parameters))))) ; parameters 
+      (is (=  '({:A "2", :B "a"} {:A "1", :B "a"})
+             (ast-check-and-process 
+              (parse-using-expression "AxB")
+              parameters))))) ; parameters 
 
   (deftest should-handle-double-product
         (let [parameters 
-          (add-parsed-parameter 
-           (add-parsed-parameter (array-map) (parse-parameter-description "A:1,2"))
-           (parse-parameter-description "B:a"))]
-          (is (= '(("a" {:name "B"} "1" {:name "A"} "a" {:name "B"} "a" {:name "B"} "2" {:name "A"} "a" {:name "B"}))
+              (add-parsed-parameter
+               (add-parsed-parameter 
+                (add-parsed-parameter (array-map) (parse-parameter-description "A:1,2"))
+                (parse-parameter-description "B:a")) (parse-parameter-description "C:x"))]
+          (is (= '({:B "a", :A "2", :C "x"} {:B "a", :A "1", :C "x"})
                  (ast-check-and-process 
-                  (parse-using-expression "BxAxB") parameters)))))
+                  (parse-using-expression "BxAxC") parameters)))))
 )

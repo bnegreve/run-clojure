@@ -63,3 +63,7 @@ this function returns an array containing each value."
   (assoc parameters 
     (first new-parsed-parameter) 
     (last new-parsed-parameter)))
+
+(defn all-parameter-names [parameters]
+  "Returns the list of every parameter name."
+  (map name (keys parameters)))
